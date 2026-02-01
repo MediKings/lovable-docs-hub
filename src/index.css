@@ -2,95 +2,131 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* Documentation Design System - Inspired by React Native Docs */
 
 @layer base {
   :root {
+    /* Base colors */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 220 13% 18%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 220 13% 18%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 220 13% 18%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 220 13% 18%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 220 13% 18%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 187 71% 60%;
+    --accent-foreground: 220 13% 18%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 187 71% 60%;
 
     --radius: 0.5rem;
 
+    /* Header */
+    --header: 220 13% 15%;
+    --header-foreground: 0 0% 100%;
+    --header-border: 220 13% 20%;
+    --header-nav: 220 9% 70%;
+    --header-nav-hover: 0 0% 100%;
+    --header-badge: 220 13% 25%;
+    --header-badge-foreground: 220 9% 70%;
+    --header-search: 220 13% 20%;
+    --header-search-border: 220 13% 30%;
+    --header-search-placeholder: 220 9% 50%;
+    --header-search-icon: 220 9% 50%;
+
+    /* Sidebar */
     --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
+    --sidebar-foreground: 220 9% 46%;
+    --sidebar-section: 220 13% 26%;
+    --sidebar-hover: 220 13% 18%;
+    --sidebar-active: 187 71% 40%;
     --sidebar-border: 220 13% 91%;
 
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Table of Contents */
+    --toc-foreground: 220 9% 46%;
+    --toc-hover: 220 13% 18%;
+    --toc-active: 187 71% 40%;
+    --toc-border: 220 13% 91%;
+
+    /* Code blocks */
+    --code: 220 13% 15%;
+    --code-foreground: 220 14% 90%;
+    --code-header: 220 13% 12%;
+    --code-border: 220 13% 20%;
+    --code-language: 220 9% 50%;
+
+    /* Callouts */
+    --callout-info: 210 100% 97%;
+    --callout-info-border: 210 100% 50%;
+    --callout-info-foreground: 210 100% 35%;
+
+    --callout-warning: 38 92% 95%;
+    --callout-warning-border: 38 92% 50%;
+    --callout-warning-foreground: 38 92% 30%;
+
+    --callout-tip: 142 76% 95%;
+    --callout-tip-border: 142 76% 40%;
+    --callout-tip-foreground: 142 76% 25%;
+
+    --callout-danger: 0 84% 97%;
+    --callout-danger-border: 0 84% 60%;
+    --callout-danger-foreground: 0 84% 35%;
+
+    /* Accent */
+    --accent-primary: 187 71% 55%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 220 13% 10%;
+    --foreground: 220 14% 90%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 220 13% 12%;
+    --card-foreground: 220 14% 90%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 220 13% 12%;
+    --popover-foreground: 220 14% 90%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 0 0% 100%;
+    --primary-foreground: 220 13% 10%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 220 13% 18%;
+    --secondary-foreground: 220 14% 90%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 220 13% 18%;
+    --muted-foreground: 220 9% 60%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 187 71% 55%;
+    --accent-foreground: 220 13% 10%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 220 13% 20%;
+    --input: 220 13% 20%;
+    --ring: 187 71% 55%;
+
+    --header: 220 13% 8%;
+    --header-border: 220 13% 15%;
+    --sidebar-background: 220 13% 10%;
+    --sidebar-border: 220 13% 18%;
   }
 }
 
@@ -100,6 +136,74 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  code, pre {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+/* Prose styles for documentation */
+@layer components {
+  .prose-docs {
+    @apply text-foreground;
+  }
+
+  .prose-docs h1 {
+    @apply text-4xl font-bold tracking-tight mb-4 mt-0;
+  }
+
+  .prose-docs h2 {
+    @apply text-2xl font-semibold tracking-tight mt-10 mb-4 pb-2 border-b border-border;
+  }
+
+  .prose-docs h3 {
+    @apply text-xl font-semibold tracking-tight mt-8 mb-3;
+  }
+
+  .prose-docs p {
+    @apply leading-7 mb-4;
+  }
+
+  .prose-docs ul {
+    @apply list-disc pl-6 mb-4 space-y-2;
+  }
+
+  .prose-docs ol {
+    @apply list-decimal pl-6 mb-4 space-y-2;
+  }
+
+  .prose-docs li {
+    @apply leading-7;
+  }
+
+  .prose-docs a {
+    @apply text-[hsl(var(--accent-primary))] hover:underline font-medium;
+  }
+
+  .prose-docs code:not(pre code) {
+    @apply bg-muted px-1.5 py-0.5 rounded text-sm font-medium;
+  }
+
+  .prose-docs blockquote {
+    @apply border-l-4 border-border pl-4 italic text-muted-foreground my-6;
+  }
+
+  .prose-docs hr {
+    @apply my-8 border-border;
+  }
+
+  .prose-docs table {
+    @apply w-full border-collapse my-6;
+  }
+
+  .prose-docs th {
+    @apply border border-border bg-muted px-4 py-2 text-left font-semibold;
+  }
+
+  .prose-docs td {
+    @apply border border-border px-4 py-2;
   }
 }
