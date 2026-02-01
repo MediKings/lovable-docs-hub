@@ -8,12 +8,12 @@ export function Header() {
         <div className="flex items-center gap-6">
           <Link to="/" className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-accent-primary flex items-center justify-center">
-              <span className="text-header font-bold text-lg">D</span>
+              <span className="text-header font-bold text-lg">🐍</span>
             </div>
-            <span className="text-header-foreground font-semibold text-lg">DevDocs</span>
+            <span className="text-header-foreground font-semibold text-lg">DRF Blog API</span>
           </Link>
           <span className="text-xs px-2 py-0.5 rounded bg-header-badge text-header-badge-foreground font-medium">
-            v1.0
+            Django 5.0
           </span>
         </div>
 
