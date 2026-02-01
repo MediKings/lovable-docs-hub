@@ -11,46 +11,43 @@ interface SidebarItem {
 
 const sidebarItems: SidebarItem[] = [
   {
-    title: "Les Bases",
+    title: "Démarrage",
     items: [
       { title: "Introduction", href: "/docs" },
-      { title: "Composants de base", href: "/docs/components" },
-      { title: "Fondamentaux React", href: "/docs/react-fundamentals" },
-      { title: "Gestion du texte", href: "/docs/text-input" },
-      { title: "Utiliser les ScrollView", href: "/docs/scrollview" },
-      { title: "Utiliser les listes", href: "/docs/list-views" },
-    ],
-  },
-  {
-    title: "Configuration",
-    items: [
       { title: "Installation", href: "/docs/installation" },
-      { title: "Structure du projet", href: "/docs/project-structure" },
-      { title: "Variables d'environnement", href: "/docs/environment" },
+      { title: "Configuration", href: "/docs/configuration" },
     ],
   },
   {
-    title: "Workflow",
+    title: "Modèles",
     items: [
-      { title: "Développement", href: "/docs/development" },
-      { title: "Tests", href: "/docs/testing" },
-      { title: "Déploiement", href: "/docs/deployment" },
+      { title: "Article (Post)", href: "/docs/models/post" },
+      { title: "Commentaire", href: "/docs/models/comment" },
+      { title: "Like", href: "/docs/models/like" },
     ],
   },
   {
-    title: "Design",
+    title: "Serializers",
     items: [
-      { title: "Styles", href: "/docs/styles" },
-      { title: "Thèmes", href: "/docs/themes" },
-      { title: "Responsive", href: "/docs/responsive" },
+      { title: "PostSerializer", href: "/docs/serializers/post" },
+      { title: "CommentSerializer", href: "/docs/serializers/comment" },
+      { title: "LikeSerializer", href: "/docs/serializers/like" },
     ],
   },
   {
-    title: "Performance",
+    title: "Views (APIView)",
     items: [
-      { title: "Optimisation", href: "/docs/optimization" },
-      { title: "Lazy Loading", href: "/docs/lazy-loading" },
-      { title: "Caching", href: "/docs/caching" },
+      { title: "CRUD Articles", href: "/docs/views/posts" },
+      { title: "Commentaires", href: "/docs/views/comments" },
+      { title: "Likes", href: "/docs/views/likes" },
+      { title: "Nombre de vues", href: "/docs/views/view-count" },
+    ],
+  },
+  {
+    title: "URLs & Tests",
+    items: [
+      { title: "Configuration URLs", href: "/docs/urls" },
+      { title: "Tests unitaires", href: "/docs/testing" },
     ],
   },
 ];

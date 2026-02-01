@@ -27,15 +27,15 @@
     --muted: 220 14% 96%;
     --muted-foreground: 220 9% 46%;
 
-    --accent: 187 71% 60%;
-    --accent-foreground: 220 13% 18%;
+    --accent: 24 95% 53%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 187 71% 60%;
+    --ring: 24 95% 53%;
 
     --radius: 0.5rem;
 
@@ -57,13 +57,13 @@
     --sidebar-foreground: 220 9% 46%;
     --sidebar-section: 220 13% 26%;
     --sidebar-hover: 220 13% 18%;
-    --sidebar-active: 187 71% 40%;
+    --sidebar-active: 24 95% 50%;
     --sidebar-border: 220 13% 91%;
 
     /* Table of Contents */
     --toc-foreground: 220 9% 46%;
     --toc-hover: 220 13% 18%;
-    --toc-active: 187 71% 40%;
+    --toc-active: 24 95% 50%;
     --toc-border: 220 13% 91%;
 
     /* Code blocks */
@@ -91,7 +91,7 @@
     --callout-danger-foreground: 0 84% 35%;
 
     /* Accent */
-    --accent-primary: 187 71% 55%;
+    --accent-primary: 24 95% 53%;
   }
 
   .dark {
@@ -113,15 +113,15 @@
     --muted: 220 13% 18%;
     --muted-foreground: 220 9% 60%;
 
-    --accent: 187 71% 55%;
-    --accent-foreground: 220 13% 10%;
+    --accent: 24 95% 53%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62% 50%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 220 13% 20%;
     --input: 220 13% 20%;
-    --ring: 187 71% 55%;
+    --ring: 24 95% 53%;
 
     --header: 220 13% 8%;
     --header-border: 220 13% 15%;
