@@ -14,8 +14,7 @@ const sidebarItems: SidebarItem[] = [
     title: "Démarrage",
     items: [
       { title: "Introduction", href: "/docs" },
-      { title: "Installation", href: "/docs/installation" },
-      { title: "Configuration", href: "/docs/configuration" },
+      { title: "Authentification JWT", href: "/docs/authentication" },
     ],
   },
   {

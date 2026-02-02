@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Introduction from "./pages/docs/Introduction";
+import Authentication from "./pages/docs/Authentication";
 import PostModel from "./pages/docs/models/PostModel";
 import CommentModel from "./pages/docs/models/CommentModel";
 import LikeModel from "./pages/docs/models/LikeModel";
@@ -28,6 +29,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/docs" element={<Introduction />} />
+          <Route path="/docs/authentication" element={<Authentication />} />
           {/* Models */}
           <Route path="/docs/models/post" element={<PostModel />} />
           <Route path="/docs/models/comment" element={<CommentModel />} />
