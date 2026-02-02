@@ -125,7 +125,7 @@ export default function Introduction() {
       <CodeBlock code={settingsCode} language="python" />
 
       <DocsPagination
-        next={{ title: "Modèle Article (Post)", href: "/docs/models/post" }}
+        next={{ title: "Authentification JWT", href: "/docs/authentication" }}
       />
     </DocsLayout>
   );
