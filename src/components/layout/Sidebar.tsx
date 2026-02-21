@@ -14,39 +14,57 @@ const sidebarItems: SidebarItem[] = [
     title: "Démarrage",
     items: [
       { title: "Introduction", href: "/docs" },
+    ],
+  },
+  {
+    title: "Standards Généraux",
+    items: [
+      { title: "Principes Clean Code", href: "/docs/clean-code" },
+      { title: "Conventions de nommage", href: "/docs/naming" },
+    ],
+  },
+  {
+    title: "Frontend",
+    items: [
+      { title: "React & Tailwind", href: "/docs/frontend/react" },
+      { title: "Next.js", href: "/docs/frontend/nextjs" },
+    ],
+  },
+  {
+    title: "Backend",
+    items: [
+      { title: "Django REST Framework", href: "/docs/backend/django" },
+      { title: "Standards API REST", href: "/docs/backend/api" },
+    ],
+  },
+  {
+    title: "Git & Workflow",
+    items: [
+      { title: "Nommage des commits", href: "/docs/git/commits" },
+      { title: "Git Flow & Branches", href: "/docs/git/workflow" },
+    ],
+  },
+  {
+    title: "Librairies & Sécurité",
+    items: [
+      { title: "Librairies recommandées", href: "/docs/libraries" },
+      { title: "Sécurité", href: "/docs/security" },
+    ],
+  },
+  {
+    title: "Projet : Blog API (DRF)",
+    items: [
       { title: "Authentification JWT", href: "/docs/authentication" },
-    ],
-  },
-  {
-    title: "Modèles",
-    items: [
-      { title: "Article (Post)", href: "/docs/models/post" },
-      { title: "Commentaire", href: "/docs/models/comment" },
-      { title: "Like", href: "/docs/models/like" },
-    ],
-  },
-  {
-    title: "Serializers",
-    items: [
+      { title: "Modèle Post", href: "/docs/models/post" },
+      { title: "Modèle Comment", href: "/docs/models/comment" },
+      { title: "Modèle Like", href: "/docs/models/like" },
       { title: "PostSerializer", href: "/docs/serializers/post" },
       { title: "CommentSerializer", href: "/docs/serializers/comment" },
       { title: "LikeSerializer", href: "/docs/serializers/like" },
-    ],
-  },
-  {
-    title: "Views (APIView)",
-    items: [
       { title: "CRUD Articles", href: "/docs/views/posts" },
       { title: "Commentaires", href: "/docs/views/comments" },
       { title: "Likes", href: "/docs/views/likes" },
       { title: "Nombre de vues", href: "/docs/views/view-count" },
-    ],
-  },
-  {
-    title: "URLs & Tests",
-    items: [
-      { title: "Configuration URLs", href: "/docs/urls" },
-      { title: "Tests unitaires", href: "/docs/testing" },
     ],
   },
 ];
