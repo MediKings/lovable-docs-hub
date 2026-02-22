@@ -26,6 +26,16 @@ import PostViews from "./pages/docs/views/PostViews";
 import CommentViews from "./pages/docs/views/CommentViews";
 import LikeViews from "./pages/docs/views/LikeViews";
 import ViewCount from "./pages/docs/views/ViewCount";
+// Next.js Frontend (DRF)
+import NextjsFrontendSetup from "./pages/docs/nextjs-frontend/Setup";
+import NextjsFrontendAuth from "./pages/docs/nextjs-frontend/AuthPages";
+import NextjsFrontendPosts from "./pages/docs/nextjs-frontend/PostPages";
+import NextjsFrontendComments from "./pages/docs/nextjs-frontend/CommentsLikes";
+// Next.js Full-Stack (Prisma)
+import PrismaSetup from "./pages/docs/nextjs-fullstack/PrismaSetup";
+import NextAuthSetup from "./pages/docs/nextjs-fullstack/NextAuthSetup";
+import ApiRoutes from "./pages/docs/nextjs-fullstack/ApiRoutes";
+import BlogPages from "./pages/docs/nextjs-fullstack/BlogPages";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -54,7 +64,7 @@ const App = () => (
           {/* Libraries & Security */}
           <Route path="/docs/libraries" element={<Libraries />} />
           <Route path="/docs/security" element={<Security />} />
-          {/* Projet illustration : Blog API */}
+          {/* Projet : Blog API (DRF) */}
           <Route path="/docs/authentication" element={<Authentication />} />
           <Route path="/docs/models/post" element={<PostModel />} />
           <Route path="/docs/models/comment" element={<CommentModel />} />
@@ -66,6 +76,16 @@ const App = () => (
           <Route path="/docs/views/comments" element={<CommentViews />} />
           <Route path="/docs/views/likes" element={<LikeViews />} />
           <Route path="/docs/views/view-count" element={<ViewCount />} />
+          {/* Projet : Next.js Frontend (DRF) */}
+          <Route path="/docs/nextjs-frontend/setup" element={<NextjsFrontendSetup />} />
+          <Route path="/docs/nextjs-frontend/auth" element={<NextjsFrontendAuth />} />
+          <Route path="/docs/nextjs-frontend/posts" element={<NextjsFrontendPosts />} />
+          <Route path="/docs/nextjs-frontend/comments" element={<NextjsFrontendComments />} />
+          {/* Projet : Next.js Full-Stack (Prisma) */}
+          <Route path="/docs/nextjs-fullstack/prisma" element={<PrismaSetup />} />
+          <Route path="/docs/nextjs-fullstack/auth" element={<NextAuthSetup />} />
+          <Route path="/docs/nextjs-fullstack/api" element={<ApiRoutes />} />
+          <Route path="/docs/nextjs-fullstack/pages" element={<BlogPages />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

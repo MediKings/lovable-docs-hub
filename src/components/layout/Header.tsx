@@ -1,5 +1,6 @@
 import { Search } from "lucide-react";
 import { Link } from "react-router-dom";
+import { SearchDialog } from "./SearchDialog";
 
 export function Header() {
   return (
@@ -33,14 +34,7 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-4">
-          <div className="relative hidden sm:block">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-header-search-icon" />
-            <input
-              type="text"
-              placeholder="Rechercher..."
-              className="w-48 lg:w-64 h-9 pl-9 pr-4 rounded-lg bg-header-search border border-header-search-border text-header-foreground placeholder:text-header-search-placeholder text-sm focus:outline-none focus:ring-2 focus:ring-accent-primary/50"
-            />
-          </div>
+          <SearchDialog />
         </div>
       </div>
     </header>
