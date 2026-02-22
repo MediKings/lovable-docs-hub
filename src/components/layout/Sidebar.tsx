@@ -67,6 +67,24 @@ const sidebarItems: SidebarItem[] = [
       { title: "Nombre de vues", href: "/docs/views/view-count" },
     ],
   },
+  {
+    title: "Projet : Next.js Frontend (DRF)",
+    items: [
+      { title: "Setup & Configuration", href: "/docs/nextjs-frontend/setup" },
+      { title: "Authentification", href: "/docs/nextjs-frontend/auth" },
+      { title: "Pages Articles", href: "/docs/nextjs-frontend/posts" },
+      { title: "Commentaires & Likes", href: "/docs/nextjs-frontend/comments" },
+    ],
+  },
+  {
+    title: "Projet : Next.js Full-Stack (Prisma)",
+    items: [
+      { title: "Prisma & PostgreSQL", href: "/docs/nextjs-fullstack/prisma" },
+      { title: "NextAuth.js", href: "/docs/nextjs-fullstack/auth" },
+      { title: "API Routes", href: "/docs/nextjs-fullstack/api" },
+      { title: "Pages du Blog", href: "/docs/nextjs-fullstack/pages" },
+    ],
+  },
 ];
 
 interface SidebarSectionProps {
@@ -74,8 +92,9 @@ interface SidebarSectionProps {
 }
 
 function SidebarSection({ item }: SidebarSectionProps) {
-  const [isOpen, setIsOpen] = useState(true);
   const location = useLocation();
+  const hasActiveChild = item.items?.some((sub) => location.pathname === sub.href);
+  const [isOpen, setIsOpen] = useState(hasActiveChild ?? true);
 
   if (!item.items) {
     return (
