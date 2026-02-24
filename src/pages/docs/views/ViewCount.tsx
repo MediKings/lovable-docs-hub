@@ -89,7 +89,7 @@ class PostDetailView(APIView):
         serializer = PostSerializer(post)
         return Response(serializer.data)`;
 
-export default function ViewCount() {
+const ViewCount = () => {
   return (
     <DocsLayout tocItems={tocItems}>
       <h1>Compteur de vues</h1>
@@ -153,4 +153,6 @@ export default function ViewCount() {
       />
     </DocsLayout>
   );
-}
+};
+
+export default ViewCount;

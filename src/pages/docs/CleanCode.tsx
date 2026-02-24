@@ -74,7 +74,7 @@ except ValidationError as e:
     logger.warning(f"Données invalides: {e}")
     return Response({"error": str(e)}, status=400)`;
 
-export default function CleanCode() {
+const CleanCode = () => {
   return (
     <DocsLayout tocItems={tocItems}>
       <h1>Principes Clean Code</h1>
@@ -162,4 +162,6 @@ export default function CleanCode() {
       />
     </DocsLayout>
   );
-}
+};
+
+export default CleanCode;

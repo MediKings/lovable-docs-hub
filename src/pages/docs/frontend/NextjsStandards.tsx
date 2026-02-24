@@ -277,7 +277,7 @@ async function DashboardPage() {
   return <Dashboard stats={stats} posts={posts} users={users} />;
 }`;
 
-export default function NextjsStandards() {
+const NextjsStandards = () => {
   return (
     <DocsLayout tocItems={tocItems}>
       <h1>Standards Next.js</h1>
@@ -352,4 +352,6 @@ export default function NextjsStandards() {
       />
     </DocsLayout>
   );
-}
+};
+
+export default NextjsStandards;

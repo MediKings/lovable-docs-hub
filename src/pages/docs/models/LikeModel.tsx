@@ -98,7 +98,7 @@ class Like(models.Model):
     class Meta:
         unique_together = ['post', 'user']`;
 
-export default function LikeModel() {
+const LikeModel = () => {
   return (
     <DocsLayout tocItems={tocItems}>
       <h1>Modèle Like</h1>
@@ -138,4 +138,6 @@ export default function LikeModel() {
       />
     </DocsLayout>
   );
-}
+};
+
+export default LikeModel;

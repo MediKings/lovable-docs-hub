@@ -3,7 +3,7 @@ import { ArrowRight, Book, Code, Database, Shield, GitBranch, Layers, FileCode }
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/layout/Header";
 
-export default function Index() {
+const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -127,7 +127,7 @@ export default function Index() {
           </p>
           <div className="grid md:grid-cols-3 gap-8">
             {/* Projet 1 */}
-            <div className="rounded-xl border border-border bg-card p-6 space-y-4">
+            <Link to="/docs/authentication" className="rounded-xl border border-border bg-card p-6 space-y-4 hover:border-accent-primary/50 hover:shadow-lg transition-all duration-200 block">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent-primary/10 text-accent-primary text-xs font-semibold">
                 <Database className="w-3.5 h-3.5" /> Backend
               </div>
@@ -139,9 +139,9 @@ export default function Index() {
                 <ProjectLink href="/docs/serializers/post" label="Serializers DRF" />
                 <ProjectLink href="/docs/views/posts" label="Views & CRUD" />
               </div>
-            </div>
+            </Link>
             {/* Projet 2 */}
-            <div className="rounded-xl border border-border bg-card p-6 space-y-4">
+            <Link to="/docs/nextjs-frontend/setup" className="rounded-xl border border-border bg-card p-6 space-y-4 hover:border-accent-primary/50 hover:shadow-lg transition-all duration-200 block">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent-primary/10 text-accent-primary text-xs font-semibold">
                 <Layers className="w-3.5 h-3.5" /> Frontend
               </div>
@@ -153,9 +153,9 @@ export default function Index() {
                 <ProjectLink href="/docs/nextjs-frontend/posts" label="Pages Articles" />
                 <ProjectLink href="/docs/nextjs-frontend/comments" label="Commentaires & Likes" />
               </div>
-            </div>
+            </Link>
             {/* Projet 3 */}
-            <div className="rounded-xl border border-border bg-card p-6 space-y-4">
+            <Link to="/docs/nextjs-fullstack/prisma" className="rounded-xl border border-border bg-card p-6 space-y-4 hover:border-accent-primary/50 hover:shadow-lg transition-all duration-200 block">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent-primary/10 text-accent-primary text-xs font-semibold">
                 <FileCode className="w-3.5 h-3.5" /> Full-Stack
               </div>
@@ -167,7 +167,7 @@ export default function Index() {
                 <ProjectLink href="/docs/nextjs-fullstack/api" label="API Routes" />
                 <ProjectLink href="/docs/nextjs-fullstack/pages" label="Pages du Blog" />
               </div>
-            </div>
+            </Link>
           </div>
         </div>
       </section>
@@ -192,7 +192,9 @@ export default function Index() {
   );
 }
 
-function FeatureCard({ icon: Icon, title, description }: { icon: typeof Book; title: string; description: string }) {
+export default Index;
+
+const FeatureCard = ({ icon: Icon, title, description }: { icon: typeof Book; title: string; description: string }) => {
   return (
     <div className="text-center md:text-left">
       <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-accent-primary/10 mb-4">
@@ -204,7 +206,7 @@ function FeatureCard({ icon: Icon, title, description }: { icon: typeof Book; ti
   );
 }
 
-function QuickLinkCard({ icon, title, description, href }: { icon?: React.ReactNode; title: string; description: string; href: string }) {
+const QuickLinkCard = ({ icon, title, description, href }: { icon?: React.ReactNode; title: string; description: string; href: string }) => {
   return (
     <Link
       to={href}
@@ -223,7 +225,7 @@ function QuickLinkCard({ icon, title, description, href }: { icon?: React.ReactN
   );
 }
 
-function ProjectLink({ href, label }: { href: string; label: string }) {
+const ProjectLink = ({ href, label }: { href: string; label: string }) => {
   return (
     <Link
       to={href}

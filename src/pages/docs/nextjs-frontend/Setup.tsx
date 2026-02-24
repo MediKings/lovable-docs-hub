@@ -225,7 +225,7 @@ export function isTokenExpired(token: string): boolean {
   return Date.now() >= (decoded.exp as number) * 1000;
 }`;
 
-export default function NextjsFrontendSetup() {
+const NextjsFrontendSetup = () => {
   return (
     <DocsLayout tocItems={tocItems}>
       <h1>Next.js Frontend — Setup & Configuration</h1>
@@ -273,4 +273,6 @@ export default function NextjsFrontendSetup() {
       />
     </DocsLayout>
   );
-}
+};
+
+export default NextjsFrontendSetup;

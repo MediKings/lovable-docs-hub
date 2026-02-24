@@ -165,7 +165,7 @@ updates:
     schedule:
       interval: "weekly"`;
 
-export default function Security() {
+const Security = () => {
   return (
     <DocsLayout tocItems={tocItems}>
       <h1>Sécurité</h1>
@@ -256,4 +256,6 @@ export default function Security() {
       />
     </DocsLayout>
   );
-}
+};
+
+export default Security;

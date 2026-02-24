@@ -373,7 +373,7 @@ export async function generateStaticParams() {
   return posts.map((p) => ({ slug: p.slug }));
 }`;
 
-export default function BlogPages() {
+const BlogPages = () => {
   return (
     <DocsLayout tocItems={tocItems}>
       <h1>Full-Stack — Pages du Blog</h1>
@@ -418,4 +418,6 @@ export default function BlogPages() {
       />
     </DocsLayout>
   );
-}
+};
+
+export default BlogPages;

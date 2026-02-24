@@ -244,7 +244,7 @@ main()
   })
   .finally(() => prisma.$disconnect());`;
 
-export default function PrismaSetup() {
+const PrismaSetup = () => {
   return (
     <DocsLayout tocItems={tocItems}>
       <h1>Full-Stack Next.js — Prisma & PostgreSQL</h1>
@@ -295,4 +295,6 @@ export default function PrismaSetup() {
       />
     </DocsLayout>
   );
-}
+};
+
+export default PrismaSetup;

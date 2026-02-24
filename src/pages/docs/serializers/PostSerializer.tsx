@@ -95,7 +95,7 @@ class PostSerializer(serializers.ModelSerializer):
             )
         return value`;
 
-export default function PostSerializerPage() {
+const PostSerializerPage = () => {
   return (
     <DocsLayout tocItems={tocItems}>
       <h1>PostSerializer</h1>
@@ -145,4 +145,6 @@ export default function PostSerializerPage() {
       />
     </DocsLayout>
   );
-}
+};
+
+export default PostSerializerPage;

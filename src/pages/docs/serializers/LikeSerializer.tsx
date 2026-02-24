@@ -84,7 +84,7 @@ class PostSerializer(serializers.ModelSerializer):
             validated_data['slug'] = slugify(validated_data['title'])
         return super().create(validated_data)`;
 
-export default function LikeSerializerPage() {
+const LikeSerializerPage = () => {
   return (
     <DocsLayout tocItems={tocItems}>
       <h1>LikeSerializer</h1>
@@ -126,4 +126,6 @@ export default function LikeSerializerPage() {
       />
     </DocsLayout>
   );
-}
+};
+
+export default LikeSerializerPage;

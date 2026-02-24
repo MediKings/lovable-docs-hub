@@ -11,7 +11,7 @@ const tocItems = [
   { title: "Comment utiliser ce guide", href: "#utilisation", level: 2 },
 ];
 
-export default function Introduction() {
+const Introduction = () => {
   return (
     <DocsLayout tocItems={tocItems}>
       <h1>Standards de Codage — GhennySoft</h1>
@@ -84,4 +84,6 @@ export default function Introduction() {
       />
     </DocsLayout>
   );
-}
+};
+
+export default Introduction;

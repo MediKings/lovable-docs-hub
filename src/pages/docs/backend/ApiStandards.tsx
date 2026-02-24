@@ -61,20 +61,20 @@ REST_FRAMEWORK = {
 }
 
 # Requête
-GET /api/v1/posts/?page=2&page_size=10
+GET /api/posts/?page=2&page_size=10
 
 # Réponse
 {
   "count": 142,
-  "next": "https://api.ghennysoft.com/api/v1/posts/?page=3",
-  "previous": "https://api.ghennysoft.com/api/v1/posts/?page=1",
+  "next": "https://api.ghennysoft.com/api/posts/?page=3",
+  "previous": "https://api.ghennysoft.com/api/posts/?page=1",
   "results": [...]
 }`;
 
 const filteringCode = `# Filtrage par query params
-GET /api/v1/posts/?status=published&author=5
-GET /api/v1/posts/?created_after=2024-01-01
-GET /api/v1/posts/?search=django&ordering=-created_at
+GET /api/posts/?status=published&author=5
+GET /api/posts/?created_after=2024-01-01
+GET /api/posts/?search=django&ordering=-created_at
 
 # Implémentation avec django-filter
 import django_filters
@@ -98,7 +98,7 @@ class PostFilter(django_filters.FilterSet):
             Q(content__icontains=value)
         )`;
 
-export default function ApiStandards() {
+const ApiStandards = () => {
   return (
     <DocsLayout tocItems={tocItems}>
       <h1>Standards API REST</h1>
@@ -155,7 +155,7 @@ export default function ApiStandards() {
       <h2 id="versioning">Versioning</h2>
 
       <ul>
-        <li>Préfixe d'URL : <code>/api/v1/</code>, <code>/api/v2/</code></li>
+        <li>Préfixe d'URL : <code>/api/</code></li>
         <li>Ne jamais casser la rétrocompatibilité d'une version existante</li>
         <li>Déprécier avant de supprimer (min. 3 mois)</li>
         <li>Documenter les changements dans un CHANGELOG</li>
@@ -167,4 +167,6 @@ export default function ApiStandards() {
       />
     </DocsLayout>
   );
-}
+};
+
+export default ApiStandards;
