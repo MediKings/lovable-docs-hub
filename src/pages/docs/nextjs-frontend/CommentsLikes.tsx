@@ -271,7 +271,7 @@ export function LikeButton({ postId }: LikeButtonProps) {
   );
 }`;
 
-export default function CommentsLikes() {
+const CommentsLikes = () => {
   return (
     <DocsLayout tocItems={tocItems}>
       <h1>Next.js Frontend — Commentaires & Likes</h1>
@@ -310,4 +310,6 @@ export default function CommentsLikes() {
       />
     </DocsLayout>
   );
-}
+};
+
+export default CommentsLikes;

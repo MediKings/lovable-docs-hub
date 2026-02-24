@@ -373,7 +373,7 @@ export default function CreatePostPage() {
   );
 }`;
 
-export default function PostPages() {
+const PostPages = () => {
   return (
     <DocsLayout tocItems={tocItems}>
       <h1>Next.js Frontend — Articles (CRUD)</h1>
@@ -412,4 +412,6 @@ export default function PostPages() {
       />
     </DocsLayout>
   );
-}
+};
+
+export default PostPages;

@@ -161,7 +161,7 @@ class PostDetailView(APIView):
         post.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)`;
 
-export default function PostViews() {
+const PostViews = () => {
   return (
     <DocsLayout tocItems={tocItems}>
       <h1>Views CRUD Articles</h1>
@@ -235,4 +235,6 @@ export default function PostViews() {
       />
     </DocsLayout>
   );
-}
+};
+
+export default PostViews;

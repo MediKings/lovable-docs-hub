@@ -88,7 +88,7 @@ python manage.py makemigrations blog
 # Appliquer les migrations
 python manage.py migrate`;
 
-export default function PostModel() {
+const PostModel = () => {
   return (
     <DocsLayout tocItems={tocItems}>
       <h1>Modèle Article (Post)</h1>
@@ -177,4 +177,6 @@ export default function PostModel() {
       />
     </DocsLayout>
   );
-}
+};
+
+export default PostModel;

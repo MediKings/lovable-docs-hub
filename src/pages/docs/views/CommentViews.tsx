@@ -92,7 +92,7 @@ urlpatterns = [
     ),
 ]`;
 
-export default function CommentViews() {
+const CommentViews = () => {
   return (
     <DocsLayout tocItems={tocItems}>
       <h1>Views Commentaires</h1>
@@ -136,4 +136,6 @@ export default function CommentViews() {
       />
     </DocsLayout>
   );
-}
+};
+
+export default CommentViews;

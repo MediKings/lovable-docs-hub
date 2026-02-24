@@ -196,27 +196,27 @@ CREATE INDEX idx_posts_created_at ON blog_posts(created_at);`;
 
 const endpointNamingCode = `# Endpoints API — kebab-case, pluriel, orienté ressources
 # ✅ Bon
-GET    /api/v1/blog-posts/           # Liste
-POST   /api/v1/blog-posts/           # Création
-GET    /api/v1/blog-posts/{id}/      # Détail
-PUT    /api/v1/blog-posts/{id}/      # Mise à jour complète
-PATCH  /api/v1/blog-posts/{id}/      # Mise à jour partielle
-DELETE /api/v1/blog-posts/{id}/      # Suppression
+GET    /api/blog-posts/           # Liste
+POST   /api/blog-posts/           # Création
+GET    /api/blog-posts/{id}/      # Détail
+PUT    /api/blog-posts/{id}/      # Mise à jour complète
+PATCH  /api/blog-posts/{id}/      # Mise à jour partielle
+DELETE /api/blog-posts/{id}/      # Suppression
 
 # Relations imbriquées
-GET    /api/v1/blog-posts/{id}/comments/
-POST   /api/v1/blog-posts/{id}/comments/
+GET    /api/blog-posts/{id}/comments/
+POST   /api/blog-posts/{id}/comments/
 
 # Actions spécifiques
-POST   /api/v1/blog-posts/{id}/publish/
-POST   /api/v1/blog-posts/{id}/like/
+POST   /api/blog-posts/{id}/publish/
+POST   /api/blog-posts/{id}/like/
 
 # ❌ Mauvais
-GET    /api/v1/getBlogPosts           # Pas de verbe dans l'URL
-POST   /api/v1/blog_posts/create     # Pas de snake_case ni "create"
-GET    /api/v1/blogPost/1            # Pas de singulier`;
+GET    /api/getBlogPosts           # Pas de verbe dans l'URL
+POST   /api/blog_posts/create     # Pas de snake_case ni "create"
+GET    /api/blogPost/1            # Pas de singulier`;
 
-export default function Naming() {
+const Naming = () => {
   return (
     <DocsLayout tocItems={tocItems}>
       <h1>Conventions de Nommage</h1>
@@ -293,4 +293,6 @@ export default function Naming() {
       />
     </DocsLayout>
   );
-}
+};
+
+export default Naming;

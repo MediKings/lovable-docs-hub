@@ -9,7 +9,7 @@ const tocItems = [
   { title: "Règles d'adoption", href: "#adoption", level: 2 },
 ];
 
-export default function Libraries() {
+const Libraries = () => {
   return (
     <DocsLayout tocItems={tocItems}>
       <h1>Librairies Recommandées</h1>
@@ -106,4 +106,6 @@ export default function Libraries() {
       />
     </DocsLayout>
   );
-}
+};
+
+export default Libraries;

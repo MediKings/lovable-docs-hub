@@ -332,7 +332,7 @@ export const config = {
   matcher: ["/posts/create", "/profile/:path*", "/login", "/register"],
 };`;
 
-export default function AuthPages() {
+const AuthPages = () => {
   return (
     <DocsLayout tocItems={tocItems}>
       <h1>Next.js Frontend — Authentification</h1>
@@ -377,4 +377,6 @@ export default function AuthPages() {
       />
     </DocsLayout>
   );
-}
+};
+
+export default AuthPages;

@@ -46,7 +46,7 @@ class Comment(models.Model):
     def __str__(self):
         return f"Commentaire de {self.author.username} sur {self.post.title}"`;
 
-export default function CommentModel() {
+const CommentModel = () => {
   return (
     <DocsLayout tocItems={tocItems}>
       <h1>Modèle Commentaire</h1>
@@ -78,4 +78,6 @@ export default function CommentModel() {
       />
     </DocsLayout>
   );
-}
+};
+
+export default CommentModel;

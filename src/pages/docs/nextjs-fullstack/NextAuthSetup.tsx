@@ -223,7 +223,7 @@ export async function POST(req: Request) {
   // ... logique métier
 }`;
 
-export default function NextAuthSetup() {
+const NextAuthSetup = () => {
   return (
     <DocsLayout tocItems={tocItems}>
       <h1>Full-Stack — NextAuth.js</h1>
@@ -261,4 +261,6 @@ export default function NextAuthSetup() {
       />
     </DocsLayout>
   );
-}
+};
+
+export default NextAuthSetup;

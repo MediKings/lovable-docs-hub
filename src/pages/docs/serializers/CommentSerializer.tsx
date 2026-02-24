@@ -80,7 +80,7 @@ const validationCode = `class CommentSerializer(serializers.ModelSerializer):
         
         return value`;
 
-export default function CommentSerializerPage() {
+const CommentSerializerPage = () => {
   return (
     <DocsLayout tocItems={tocItems}>
       <h1>CommentSerializer</h1>
@@ -124,4 +124,6 @@ export default function CommentSerializerPage() {
       />
     </DocsLayout>
   );
-}
+};
+
+export default CommentSerializerPage;

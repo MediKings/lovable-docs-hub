@@ -220,7 +220,7 @@ class LogoutView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )`;
 
-export default function Authentication() {
+const Authentication = () => {
   return (
     <DocsLayout tocItems={tocItems}>
       <h1>Authentification JWT</h1>
@@ -340,4 +340,6 @@ export default function Authentication() {
       />
     </DocsLayout>
   );
-}
+};
+
+export default Authentication;

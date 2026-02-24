@@ -135,7 +135,7 @@ npm install -D @commitlint/cli @commitlint/config-conventional husky
 npx husky init
 echo 'npx --no -- commitlint --edit "$1"' > .husky/commit-msg`;
 
-export default function CommitNaming() {
+const CommitNaming = () => {
   return (
     <DocsLayout tocItems={tocItems}>
       <h1>Nommage des Commits Git</h1>
@@ -220,4 +220,6 @@ export default function CommitNaming() {
       />
     </DocsLayout>
   );
-}
+};
+
+export default CommitNaming;

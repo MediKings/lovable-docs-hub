@@ -81,7 +81,7 @@ Closes GS-142
 ## Screenshots (si UI)
 [Ajouter des captures d'écran]`;
 
-export default function GitWorkflow() {
+const GitWorkflow = () => {
   return (
     <DocsLayout tocItems={tocItems}>
       <h1>Git Flow & Branches</h1>
@@ -134,4 +134,6 @@ export default function GitWorkflow() {
       />
     </DocsLayout>
   );
-}
+};
+
+export default GitWorkflow;

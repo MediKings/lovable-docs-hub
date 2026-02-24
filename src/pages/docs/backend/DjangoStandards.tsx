@@ -164,7 +164,7 @@ class PostAPITestCase(TestCase):
             status.HTTP_401_UNAUTHORIZED,
         )`;
 
-export default function DjangoStandards() {
+const DjangoStandards = () => {
   return (
     <DocsLayout tocItems={tocItems}>
       <h1>Standards Django REST Framework</h1>
@@ -201,7 +201,7 @@ export default function DjangoStandards() {
       <h2 id="urls">URLs</h2>
 
       <ul>
-        <li>Préfixer avec <code>/api/v1/</code> pour le versioning</li>
+        <li>Préfixer avec <code>/api/</code></li>
         <li>Utiliser <code>kebab-case</code> dans les URLs</li>
         <li>Terminer par <code>/</code> (convention Django)</li>
         <li>Nommer chaque route avec <code>name=</code></li>
@@ -216,4 +216,6 @@ export default function DjangoStandards() {
       />
     </DocsLayout>
   );
-}
+};
+
+export default DjangoStandards;

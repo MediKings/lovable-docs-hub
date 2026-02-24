@@ -127,7 +127,7 @@ const mutation = useMutation({
   },
 });`;
 
-export default function ReactStandards() {
+const ReactStandards = () => {
   return (
     <DocsLayout tocItems={tocItems}>
       <h1>Standards React & Tailwind CSS</h1>
@@ -185,4 +185,6 @@ export default function ReactStandards() {
       />
     </DocsLayout>
   );
-}
+};
+
+export default ReactStandards;

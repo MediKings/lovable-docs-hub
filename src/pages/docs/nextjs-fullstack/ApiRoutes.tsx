@@ -508,7 +508,7 @@ export function handleApiError(error: unknown) {
 //   return handleApiError(error);
 // }`;
 
-export default function ApiRoutes() {
+const ApiRoutes = () => {
   return (
     <DocsLayout tocItems={tocItems}>
       <h1>Full-Stack — API Routes</h1>
@@ -552,4 +552,6 @@ export default function ApiRoutes() {
       />
     </DocsLayout>
   );
-}
+};
+
+export default ApiRoutes;

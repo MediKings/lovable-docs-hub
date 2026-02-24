@@ -98,7 +98,7 @@ class LikeToggleView(APIView):
                 "like_count": post.like_count
             })`;
 
-export default function LikeViews() {
+const LikeViews = () => {
   return (
     <DocsLayout tocItems={tocItems}>
       <h1>Views Likes</h1>
@@ -146,4 +146,6 @@ export default function LikeViews() {
       />
     </DocsLayout>
   );
-}
+};
+
+export default LikeViews;
