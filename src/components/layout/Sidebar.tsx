@@ -68,6 +68,15 @@ const sidebarItems: SidebarItem[] = [
     ],
   },
   {
+    title: "Librairies Next.js",
+    items: [
+      { title: "Axios", href: "/docs/nextjs-libs/axios" },
+      { title: "TanStack Query", href: "/docs/nextjs-libs/tanstack-query" },
+      { title: "Tiptap (Éditeur)", href: "/docs/nextjs-libs/tiptap" },
+      { title: "Zod & React Hook Form", href: "/docs/nextjs-libs/zod-rhf" },
+    ],
+  },
+  {
     title: "Projet : Next.js Frontend (DRF)",
     items: [
       { title: "Setup & Configuration", href: "/docs/nextjs-frontend/setup" },
