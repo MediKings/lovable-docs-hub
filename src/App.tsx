@@ -26,6 +26,11 @@ import PostViews from "./pages/docs/views/PostViews";
 import CommentViews from "./pages/docs/views/CommentViews";
 import LikeViews from "./pages/docs/views/LikeViews";
 import ViewCount from "./pages/docs/views/ViewCount";
+// Next.js Librairies
+import AxiosSetup from "./pages/docs/nextjs-libs/AxiosSetup";
+import TanStackQuery from "./pages/docs/nextjs-libs/TanStackQuery";
+import TiptapEditor from "./pages/docs/nextjs-libs/TiptapEditor";
+import ZodReactHookForm from "./pages/docs/nextjs-libs/ZodReactHookForm";
 // Next.js Frontend (DRF)
 import NextjsFrontendSetup from "./pages/docs/nextjs-frontend/Setup";
 import NextjsFrontendAuth from "./pages/docs/nextjs-frontend/AuthPages";
@@ -76,6 +81,11 @@ const App = () => (
           <Route path="/docs/views/comments" element={<CommentViews />} />
           <Route path="/docs/views/likes" element={<LikeViews />} />
           <Route path="/docs/views/view-count" element={<ViewCount />} />
+          {/* Librairies Next.js */}
+          <Route path="/docs/nextjs-libs/axios" element={<AxiosSetup />} />
+          <Route path="/docs/nextjs-libs/tanstack-query" element={<TanStackQuery />} />
+          <Route path="/docs/nextjs-libs/tiptap" element={<TiptapEditor />} />
+          <Route path="/docs/nextjs-libs/zod-rhf" element={<ZodReactHookForm />} />
           {/* Projet : Next.js Frontend (DRF) */}
           <Route path="/docs/nextjs-frontend/setup" element={<NextjsFrontendSetup />} />
           <Route path="/docs/nextjs-frontend/auth" element={<NextjsFrontendAuth />} />

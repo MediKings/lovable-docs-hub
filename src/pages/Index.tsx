@@ -91,6 +91,12 @@ const Index = () => {
               href="/docs/frontend/nextjs"
             />
             <QuickLinkCard
+              icon={<Code className="w-6 h-6 text-accent-primary" />}
+              title="Librairies Next.js"
+              description="Axios, TanStack Query, Tiptap, Zod & React Hook Form."
+              href="/docs/nextjs-libs/axios"
+            />
+            <QuickLinkCard
               icon={<Database className="w-6 h-6 text-accent-primary" />}
               title="Django REST Framework"
               description="APIView, serializers, permissions et pagination."
