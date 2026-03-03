@@ -14,10 +14,11 @@ const tocItems = [
 const authProviderCode = `// src/providers/auth-provider.tsx
 "use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import apiClient from "@/lib/api-client";
-import { getAccessToken, setTokens, clearTokens, decodeToken } from "@/lib/auth";
+import { getAccessToken, setTokens, clearTokens } from "@/lib/auth";
 import type { User, AuthTokens } from "@/types/user";
 
 interface AuthContextType {
@@ -37,66 +38,79 @@ interface RegisterData {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const token = getAccessToken();
-    if (token) {
-      fetchUser();
-    } else {
-      setIsLoading(false);
-    }
-  }, []);
-
-  async function fetchUser() {
-    try {
+  // ✅ TanStack Query pour récupérer le profil utilisateur
+  const { data: user = null, isLoading } = useQuery({
+    queryKey: ["auth", "me"],
+    queryFn: async () => {
       const { data } = await apiClient.get<User>("/auth/me/");
-      setUser(data);
-    } catch {
-      clearTokens();
-    } finally {
-      setIsLoading(false);
-    }
-  }
+      return data;
+    },
+    enabled: !!getAccessToken(),
+    retry: false,
+  });
 
-  async function login(username: string, password: string) {
-    const { data } = await apiClient.post<AuthTokens>("/auth/token/", {
-      username,
-      password,
-    });
-    setTokens(data.access, data.refresh);
-    await fetchUser();
-    router.push("/");
-  }
+  // ✅ Mutation login via Axios
+  const loginMutation = useMutation({
+    mutationFn: async ({ username, password }: { username: string; password: string }) => {
+      const { data } = await apiClient.post<AuthTokens>("/auth/token/", {
+        username,
+        password,
+      });
+      return data;
+    },
+    onSuccess: (data) => {
+      setTokens(data.access, data.refresh);
+      queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+      router.push("/");
+    },
+  });
 
-  async function register(registerData: RegisterData) {
-    await apiClient.post("/auth/register/", registerData);
-    await login(registerData.username, registerData.password);
-  }
+  // ✅ Mutation register via Axios
+  const registerMutation = useMutation({
+    mutationFn: async (registerData: RegisterData) => {
+      await apiClient.post("/auth/register/", registerData);
+      return registerData;
+    },
+    onSuccess: async (registerData) => {
+      await loginMutation.mutateAsync({
+        username: registerData.username,
+        password: registerData.password,
+      });
+    },
+  });
 
-  function logout() {
+  const logout = () => {
     clearTokens();
-    setUser(null);
+    queryClient.clear();
     router.push("/login");
-  }
+  };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isLoading,
+        login: (username, password) => loginMutation.mutateAsync({ username, password }),
+        register: (data) => registerMutation.mutateAsync(data),
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
-export function useAuth() {
+export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
-}`;
+};`;
 
 const loginPageCode = `// src/app/login/page.tsx
 "use client";
@@ -119,7 +133,7 @@ const loginSchema = z.object({
 
 type LoginForm = z.infer<typeof loginSchema>;
 
-export default function LoginPage() {
+const LoginPage = () => {
   const { login } = useAuth();
   const [error, setError] = useState<string | null>(null);
 
@@ -131,14 +145,14 @@ export default function LoginPage() {
     resolver: zodResolver(loginSchema),
   });
 
-  async function onSubmit(data: LoginForm) {
+  const onSubmit = async (data: LoginForm) => {
     try {
       setError(null);
       await login(data.username, data.password);
     } catch {
       setError("Identifiants incorrects. Veuillez réessayer.");
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -149,7 +163,7 @@ export default function LoginPage() {
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {error && (
-              <div className="p-3 rounded bg-red-50 text-red-600 text-sm">
+              <div className="p-3 rounded bg-destructive/10 text-destructive text-sm">
                 {error}
               </div>
             )}
@@ -157,14 +171,14 @@ export default function LoginPage() {
               <Label htmlFor="username">Nom d'utilisateur</Label>
               <Input id="username" {...register("username")} />
               {errors.username && (
-                <p className="text-sm text-red-500">{errors.username.message}</p>
+                <p className="text-sm text-destructive">{errors.username.message}</p>
               )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Mot de passe</Label>
               <Input id="password" type="password" {...register("password")} />
               {errors.password && (
-                <p className="text-sm text-red-500">{errors.password.message}</p>
+                <p className="text-sm text-destructive">{errors.password.message}</p>
               )}
             </div>
             <Button type="submit" className="w-full" disabled={isSubmitting}>
@@ -181,7 +195,9 @@ export default function LoginPage() {
       </Card>
     </div>
   );
-}`;
+};
+
+export default LoginPage;`;
 
 const registerPageCode = `// src/app/register/page.tsx
 "use client";
@@ -218,7 +234,7 @@ const registerSchema = z
 
 type RegisterForm = z.infer<typeof registerSchema>;
 
-export default function RegisterPage() {
+const RegisterPage = () => {
   const { register: registerUser } = useAuth();
   const [error, setError] = useState<string | null>(null);
 
@@ -230,14 +246,14 @@ export default function RegisterPage() {
     resolver: zodResolver(registerSchema),
   });
 
-  async function onSubmit(data: RegisterForm) {
+  const onSubmit = async (data: RegisterForm) => {
     try {
       setError(null);
       await registerUser(data);
     } catch {
       setError("Erreur lors de l'inscription. Veuillez réessayer.");
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -248,7 +264,7 @@ export default function RegisterPage() {
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {error && (
-              <div className="p-3 rounded bg-red-50 text-red-600 text-sm">
+              <div className="p-3 rounded bg-destructive/10 text-destructive text-sm">
                 {error}
               </div>
             )}
@@ -256,21 +272,21 @@ export default function RegisterPage() {
               <Label htmlFor="username">Nom d'utilisateur</Label>
               <Input id="username" {...register("username")} />
               {errors.username && (
-                <p className="text-sm text-red-500">{errors.username.message}</p>
+                <p className="text-sm text-destructive">{errors.username.message}</p>
               )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input id="email" type="email" {...register("email")} />
               {errors.email && (
-                <p className="text-sm text-red-500">{errors.email.message}</p>
+                <p className="text-sm text-destructive">{errors.email.message}</p>
               )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Mot de passe</Label>
               <Input id="password" type="password" {...register("password")} />
               {errors.password && (
-                <p className="text-sm text-red-500">{errors.password.message}</p>
+                <p className="text-sm text-destructive">{errors.password.message}</p>
               )}
             </div>
             <div className="space-y-2">
@@ -281,7 +297,7 @@ export default function RegisterPage() {
                 {...register("password_confirm")}
               />
               {errors.password_confirm && (
-                <p className="text-sm text-red-500">
+                <p className="text-sm text-destructive">
                   {errors.password_confirm.message}
                 </p>
               )}
@@ -300,7 +316,9 @@ export default function RegisterPage() {
       </Card>
     </div>
   );
-}`;
+};
+
+export default RegisterPage;`;
 
 const middlewareCode = `// src/middleware.ts
 import { NextResponse } from "next/server";
@@ -309,7 +327,7 @@ import type { NextRequest } from "next/server";
 const PROTECTED_ROUTES = ["/posts/create", "/profile"];
 const AUTH_ROUTES = ["/login", "/register"];
 
-export function middleware(request: NextRequest) {
+export const middleware = (request: NextRequest) => {
   const token = request.cookies.get("gs_access_token")?.value;
   const { pathname } = request.nextUrl;
 
@@ -326,7 +344,7 @@ export function middleware(request: NextRequest) {
   }
 
   return NextResponse.next();
-}
+};
 
 export const config = {
   matcher: ["/posts/create", "/profile/:path*", "/login", "/register"],
@@ -338,18 +356,20 @@ const AuthPages = () => {
       <h1>Next.js Frontend — Authentification</h1>
 
       <p>
-        Implémentation complète de l'authentification JWT côté client avec gestion 
-        du contexte React, formulaires validés par Zod et middleware Next.js.
+        Implémentation complète de l'authentification JWT côté client avec 
+        <strong> Axios</strong> pour les requêtes, <strong>TanStack Query v5</strong> pour le cache 
+        du profil utilisateur, et <strong>Zod</strong> + <strong>React Hook Form</strong> pour la validation.
       </p>
 
       <Callout type="tip" title="Pattern GhennySoft">
-        L'AuthProvider centralise toute la logique d'auth. Les composants consomment 
-        le hook <code>useAuth()</code> sans jamais manipuler les tokens directement.
+        L'AuthProvider utilise TanStack Query pour récupérer et cacher le profil utilisateur. 
+        Les mutations login/register passent par <code>useMutation</code> pour une gestion 
+        d'état automatique.
       </Callout>
 
       <hr />
 
-      <h2 id="auth-provider">AuthProvider (Context)</h2>
+      <h2 id="auth-provider">AuthProvider (Context + TanStack Query)</h2>
       <CodeBlock code={authProviderCode} language="typescript" />
 
       <h2 id="use-auth">Hook useAuth</h2>

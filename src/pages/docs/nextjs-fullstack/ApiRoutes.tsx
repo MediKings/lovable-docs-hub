@@ -20,7 +20,7 @@ export const createPostSchema = z.object({
     .string()
     .min(5, "Le titre doit contenir au moins 5 caractères")
     .max(200, "Maximum 200 caractères"),
-  content: z.string().min(20, "Minimum 20 caractères"),
+  content: z.string().min(20, "Minimum 20 caractères"), // HTML riche (Tiptap)
 });
 
 export const updatePostSchema = createPostSchema.partial().extend({
@@ -60,20 +60,19 @@ export type CreateCommentInput = z.infer<typeof createCommentSchema>;`;
 
 const postsRouteCode = `// src/app/api/posts/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 import { createPostSchema } from "@/lib/validations";
 
-function slugify(text: string): string {
+const slugify = (text: string): string => {
   return text
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
-}
+};
 
 // GET /api/posts — Liste des articles publiés
-export async function GET(req: NextRequest) {
+export const GET = async (req: NextRequest) => {
   const { searchParams } = new URL(req.url);
   const page = parseInt(searchParams.get("page") ?? "1");
   const perPage = parseInt(searchParams.get("per_page") ?? "10");
@@ -109,12 +108,12 @@ export async function GET(req: NextRequest) {
       total_pages: Math.ceil(total / perPage),
     },
   });
-}
+};
 
-// POST /api/posts — Créer un article
-export async function POST(req: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session) {
+// POST /api/posts — Créer un article (contenu HTML via Tiptap)
+export const POST = async (req: NextRequest) => {
+  const session = await auth();
+  if (!session?.user?.id) {
     return NextResponse.json(
       { error: { code: "UNAUTHORIZED", message: "Non authentifié" } },
       { status: 401 }
@@ -141,30 +140,31 @@ export async function POST(req: NextRequest) {
     data: {
       title: result.data.title,
       slug: slugify(result.data.title) + "-" + Date.now(),
-      content: result.data.content,
-      authorId: (session.user as any).id,
+      content: result.data.content, // HTML riche (Tiptap)
+      authorId: session.user.id,
       isPublished: true,
     },
   });
 
   return NextResponse.json({ data: post }, { status: 201 });
-}`;
+};`;
 
 const postDetailCode = `// src/app/api/posts/[slug]/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 import { updatePostSchema } from "@/lib/validations";
 
 interface Params {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 // GET /api/posts/:slug — Détail + incrémente les vues
-export async function GET(req: NextRequest, { params }: Params) {
+export const GET = async (req: NextRequest, { params }: Params) => {
+  const { slug } = await params;
+
   const post = await prisma.post.update({
-    where: { slug: params.slug },
+    where: { slug },
     data: { viewCount: { increment: 1 } },
     include: {
       author: {
@@ -182,21 +182,20 @@ export async function GET(req: NextRequest, { params }: Params) {
   }
 
   return NextResponse.json({ data: post });
-}
+};
 
 // PATCH /api/posts/:slug — Modifier un article
-export async function PATCH(req: NextRequest, { params }: Params) {
-  const session = await getServerSession(authOptions);
-  if (!session) {
+export const PATCH = async (req: NextRequest, { params }: Params) => {
+  const { slug } = await params;
+  const session = await auth();
+  if (!session?.user?.id) {
     return NextResponse.json(
       { error: { code: "UNAUTHORIZED", message: "Non authentifié" } },
       { status: 401 }
     );
   }
 
-  const post = await prisma.post.findUnique({
-    where: { slug: params.slug },
-  });
+  const post = await prisma.post.findUnique({ where: { slug } });
 
   if (!post) {
     return NextResponse.json(
@@ -205,7 +204,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     );
   }
 
-  if (post.authorId !== (session.user as any).id) {
+  if (post.authorId !== session.user.id) {
     return NextResponse.json(
       { error: { code: "FORBIDDEN", message: "Non autorisé" } },
       { status: 403 }
@@ -223,53 +222,53 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   }
 
   const updated = await prisma.post.update({
-    where: { slug: params.slug },
+    where: { slug },
     data: result.data,
   });
 
   return NextResponse.json({ data: updated });
-}
+};
 
 // DELETE /api/posts/:slug — Supprimer un article
-export async function DELETE(req: NextRequest, { params }: Params) {
-  const session = await getServerSession(authOptions);
-  if (!session) {
+export const DELETE = async (req: NextRequest, { params }: Params) => {
+  const { slug } = await params;
+  const session = await auth();
+  if (!session?.user?.id) {
     return NextResponse.json(
       { error: { code: "UNAUTHORIZED", message: "Non authentifié" } },
       { status: 401 }
     );
   }
 
-  const post = await prisma.post.findUnique({
-    where: { slug: params.slug },
-  });
+  const post = await prisma.post.findUnique({ where: { slug } });
 
-  if (!post || post.authorId !== (session.user as any).id) {
+  if (!post || post.authorId !== session.user.id) {
     return NextResponse.json(
       { error: { code: "FORBIDDEN", message: "Non autorisé" } },
       { status: 403 }
     );
   }
 
-  await prisma.post.delete({ where: { slug: params.slug } });
+  await prisma.post.delete({ where: { slug } });
   return new NextResponse(null, { status: 204 });
-}`;
+};`;
 
 const commentsRouteCode = `// src/app/api/posts/[slug]/comments/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 import { createCommentSchema } from "@/lib/validations";
 
 interface Params {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 // GET /api/posts/:slug/comments
-export async function GET(req: NextRequest, { params }: Params) {
+export const GET = async (req: NextRequest, { params }: Params) => {
+  const { slug } = await params;
+
   const post = await prisma.post.findUnique({
-    where: { slug: params.slug },
+    where: { slug },
     select: { id: true },
   });
 
@@ -291,12 +290,13 @@ export async function GET(req: NextRequest, { params }: Params) {
   });
 
   return NextResponse.json({ data: comments });
-}
+};
 
 // POST /api/posts/:slug/comments
-export async function POST(req: NextRequest, { params }: Params) {
-  const session = await getServerSession(authOptions);
-  if (!session) {
+export const POST = async (req: NextRequest, { params }: Params) => {
+  const { slug } = await params;
+  const session = await auth();
+  if (!session?.user?.id) {
     return NextResponse.json(
       { error: { code: "UNAUTHORIZED", message: "Non authentifié" } },
       { status: 401 }
@@ -304,7 +304,7 @@ export async function POST(req: NextRequest, { params }: Params) {
   }
 
   const post = await prisma.post.findUnique({
-    where: { slug: params.slug },
+    where: { slug },
     select: { id: true },
   });
 
@@ -329,7 +329,7 @@ export async function POST(req: NextRequest, { params }: Params) {
     data: {
       content: result.data.content,
       postId: post.id,
-      authorId: (session.user as any).id,
+      authorId: session.user.id,
     },
     include: {
       author: {
@@ -339,32 +339,32 @@ export async function POST(req: NextRequest, { params }: Params) {
   });
 
   return NextResponse.json({ data: comment }, { status: 201 });
-}`;
+};`;
 
 const likesRouteCode = `// src/app/api/posts/[slug]/likes/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 
 interface Params {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 // POST /api/posts/:slug/likes — Toggle like
-export async function POST(req: NextRequest, { params }: Params) {
-  const session = await getServerSession(authOptions);
-  if (!session) {
+export const POST = async (req: NextRequest, { params }: Params) => {
+  const { slug } = await params;
+  const session = await auth();
+  if (!session?.user?.id) {
     return NextResponse.json(
       { error: { code: "UNAUTHORIZED", message: "Non authentifié" } },
       { status: 401 }
     );
   }
 
-  const userId = (session.user as any).id;
+  const userId = session.user.id;
 
   const post = await prisma.post.findUnique({
-    where: { slug: params.slug },
+    where: { slug },
     select: { id: true },
   });
 
@@ -383,15 +383,9 @@ export async function POST(req: NextRequest, { params }: Params) {
   });
 
   if (existingLike) {
-    // Unlike
-    await prisma.like.delete({
-      where: { id: existingLike.id },
-    });
+    await prisma.like.delete({ where: { id: existingLike.id } });
   } else {
-    // Like
-    await prisma.like.create({
-      data: { postId: post.id, userId },
-    });
+    await prisma.like.create({ data: { postId: post.id, userId } });
   }
 
   // Retourner le nouveau statut
@@ -405,15 +399,16 @@ export async function POST(req: NextRequest, { params }: Params) {
       likeCount,
     },
   });
-}
+};
 
 // GET /api/posts/:slug/likes — Statut du like
-export async function GET(req: NextRequest, { params }: Params) {
-  const session = await getServerSession(authOptions);
-  const userId = session ? (session.user as any).id : null;
+export const GET = async (req: NextRequest, { params }: Params) => {
+  const { slug } = await params;
+  const session = await auth();
+  const userId = session?.user?.id ?? null;
 
   const post = await prisma.post.findUnique({
-    where: { slug: params.slug },
+    where: { slug },
     select: { id: true },
   });
 
@@ -439,14 +434,14 @@ export async function GET(req: NextRequest, { params }: Params) {
       likeCount,
     },
   });
-}`;
+};`;
 
 const errorHandlerCode = `// src/lib/api-error.ts
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { Prisma } from "@prisma/client";
 
-export function handleApiError(error: unknown) {
+export const handleApiError = (error: unknown) => {
   // Erreur de validation Zod
   if (error instanceof ZodError) {
     return NextResponse.json(
@@ -499,7 +494,7 @@ export function handleApiError(error: unknown) {
     },
     { status: 500 }
   );
-}
+};
 
 // Utilisation dans un route handler :
 // try {
@@ -514,13 +509,15 @@ const ApiRoutes = () => {
       <h1>Full-Stack — API Routes</h1>
 
       <p>
-        Toutes les API Routes du blog implémentées avec les Route Handlers de Next.js, 
-        la validation Zod et Prisma pour l'accès aux données.
+        Toutes les API Routes du blog implémentées avec les Route Handlers de Next.js 16, 
+        la validation <strong>Zod</strong>, <strong>Auth.js v5</strong> pour l'authentification 
+        et <strong>Prisma 7</strong> pour l'accès aux données.
       </p>
 
       <Callout type="info" title="Format de réponse standard">
         Toutes les API suivent le format GhennySoft : <code>{"{ data, meta }"}</code> pour 
         les succès et <code>{"{ error: { code, message, details } }"}</code> pour les erreurs.
+        Le champ <code>content</code> contient du HTML riche généré par Tiptap.
       </Callout>
 
       <hr />
@@ -547,7 +544,7 @@ const ApiRoutes = () => {
       <CodeBlock code={errorHandlerCode} language="typescript" />
 
       <DocsPagination
-        prev={{ title: "NextAuth.js", href: "/docs/nextjs-fullstack/auth" }}
+        prev={{ title: "Auth.js v5", href: "/docs/nextjs-fullstack/auth" }}
         next={{ title: "Pages du blog", href: "/docs/nextjs-fullstack/pages" }}
       />
     </DocsLayout>
