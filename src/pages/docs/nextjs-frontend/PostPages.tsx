@@ -8,7 +8,7 @@ const tocItems = [
   { title: "Composant PostCard", href: "#post-card", level: 2 },
   { title: "Liste des articles", href: "#list", level: 2 },
   { title: "Détail d'un article", href: "#detail", level: 2 },
-  { title: "Création d'article", href: "#create", level: 2 },
+  { title: "Création d'article (Tiptap)", href: "#create", level: 2 },
 ];
 
 const hookCode = `// src/hooks/use-posts.ts
@@ -17,7 +17,7 @@ import apiClient from "@/lib/api-client";
 import type { Post, CreatePostPayload } from "@/types/post";
 import type { ApiResponse } from "@/types/api";
 
-export function usePosts(page = 1) {
+export const usePosts = (page = 1) => {
   return useQuery({
     queryKey: ["posts", page],
     queryFn: async () => {
@@ -27,9 +27,9 @@ export function usePosts(page = 1) {
       return data;
     },
   });
-}
+};
 
-export function usePost(slug: string) {
+export const usePost = (slug: string) => {
   return useQuery({
     queryKey: ["post", slug],
     queryFn: async () => {
@@ -38,9 +38,9 @@ export function usePost(slug: string) {
     },
     enabled: !!slug,
   });
-}
+};
 
-export function useCreatePost() {
+export const useCreatePost = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -52,9 +52,9 @@ export function useCreatePost() {
       queryClient.invalidateQueries({ queryKey: ["posts"] });
     },
   });
-}
+};
 
-export function useDeletePost() {
+export const useDeletePost = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -65,7 +65,7 @@ export function useDeletePost() {
       queryClient.invalidateQueries({ queryKey: ["posts"] });
     },
   });
-}`;
+};`;
 
 const postCardCode = `// src/components/posts/post-card.tsx
 import Link from "next/link";
@@ -79,7 +79,7 @@ interface PostCardProps {
   post: Post;
 }
 
-export function PostCard({ post }: PostCardProps) {
+export const PostCard = ({ post }: PostCardProps) => {
   return (
     <Card className="hover:shadow-md transition-shadow">
       <CardHeader>
@@ -98,9 +98,11 @@ export function PostCard({ post }: PostCardProps) {
         </p>
       </CardHeader>
       <CardContent>
-        <p className="text-muted-foreground line-clamp-3">
-          {post.content.slice(0, 200)}...
-        </p>
+        {/* Rendu HTML riche (Tiptap) */}
+        <div
+          className="text-muted-foreground line-clamp-3 text-sm prose prose-sm"
+          dangerouslySetInnerHTML={{ __html: post.content.slice(0, 300) }}
+        />
       </CardContent>
       <CardFooter className="gap-4 text-sm text-muted-foreground">
         <span className="flex items-center gap-1">
@@ -115,7 +117,7 @@ export function PostCard({ post }: PostCardProps) {
       </CardFooter>
     </Card>
   );
-}`;
+};`;
 
 const listPageCode = `// src/app/posts/page.tsx
 "use client";
@@ -126,7 +128,7 @@ import { PostCard } from "@/components/posts/post-card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function PostsPage() {
+const PostsPage = () => {
   const [page, setPage] = useState(1);
   const { data, isLoading, isError } = usePosts(page);
 
@@ -185,7 +187,9 @@ export default function PostsPage() {
       )}
     </div>
   );
-}`;
+};
+
+export default PostsPage;`;
 
 const detailPageCode = `// src/app/posts/[slug]/page.tsx
 "use client";
@@ -202,7 +206,7 @@ import { LikeButton } from "@/components/posts/like-button";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function PostDetailPage() {
+const PostDetailPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const router = useRouter();
   const { user } = useAuth();
@@ -221,11 +225,11 @@ export default function PostDetailPage() {
 
   if (!post) return null;
 
-  async function handleDelete() {
+  const handleDelete = async () => {
     if (!confirm("Supprimer cet article ?")) return;
     await deletePost.mutateAsync(slug);
     router.push("/posts");
-  }
+  };
 
   return (
     <article className="max-w-3xl mx-auto py-8">
@@ -258,9 +262,11 @@ export default function PostDetailPage() {
         )}
       </div>
 
-      <div className="prose prose-neutral max-w-none mb-8">
-        {post.content}
-      </div>
+      {/* ✅ Rendu HTML riche généré par Tiptap */}
+      <div
+        className="prose prose-neutral max-w-none mb-8"
+        dangerouslySetInnerHTML={{ __html: post.content }}
+      />
 
       <div className="flex items-center gap-4 border-t border-b py-4 mb-8">
         <LikeButton postId={post.id} />
@@ -278,19 +284,21 @@ export default function PostDetailPage() {
       </section>
     </article>
   );
-}`;
+};
+
+export default PostDetailPage;`;
 
 const createPageCode = `// src/app/posts/create/page.tsx
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useCreatePost } from "@/hooks/use-posts";
+import { TiptapEditor } from "@/components/editor/tiptap-editor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -306,22 +314,24 @@ const postSchema = z.object({
 
 type PostForm = z.infer<typeof postSchema>;
 
-export default function CreatePostPage() {
+const CreatePostPage = () => {
   const router = useRouter();
   const createPost = useCreatePost();
 
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<PostForm>({
     resolver: zodResolver(postSchema),
+    defaultValues: { title: "", content: "" },
   });
 
-  async function onSubmit(data: PostForm) {
+  const onSubmit = async (data: PostForm) => {
     const post = await createPost.mutateAsync(data);
     router.push(\`/posts/\${post.slug}\`);
-  }
+  };
 
   return (
     <div className="max-w-2xl mx-auto py-8">
@@ -339,21 +349,28 @@ export default function CreatePostPage() {
                 {...register("title")}
               />
               {errors.title && (
-                <p className="text-sm text-red-500">{errors.title.message}</p>
+                <p className="text-sm text-destructive">{errors.title.message}</p>
               )}
             </div>
+
+            {/* ✅ Tiptap Rich Text Editor au lieu de <Textarea> */}
             <div className="space-y-2">
-              <Label htmlFor="content">Contenu</Label>
-              <Textarea
-                id="content"
-                rows={12}
-                placeholder="Écrivez votre article..."
-                {...register("content")}
+              <Label>Contenu</Label>
+              <Controller
+                name="content"
+                control={control}
+                render={({ field }) => (
+                  <TiptapEditor
+                    content={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
               />
               {errors.content && (
-                <p className="text-sm text-red-500">{errors.content.message}</p>
+                <p className="text-sm text-destructive">{errors.content.message}</p>
               )}
             </div>
+
             <div className="flex gap-2">
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? "Publication..." : "Publier"}
@@ -371,7 +388,9 @@ export default function CreatePostPage() {
       </Card>
     </div>
   );
-}`;
+};
+
+export default CreatePostPage;`;
 
 const PostPages = () => {
   return (
@@ -379,13 +398,14 @@ const PostPages = () => {
       <h1>Next.js Frontend — Articles (CRUD)</h1>
 
       <p>
-        Gestion complète des articles avec TanStack Query pour le cache et les mutations, 
-        et Zod pour la validation des formulaires.
+        Gestion complète des articles avec <strong>Axios</strong> + <strong>TanStack Query v5</strong> pour 
+        les requêtes et le cache, <strong>Zod</strong> + <strong>React Hook Form</strong> pour la validation, 
+        et <strong>Tiptap</strong> comme éditeur de contenu riche.
       </p>
 
       <Callout type="tip" title="Pattern GhennySoft">
         Chaque entité a son propre hook (<code>usePosts</code>, <code>useComments</code>) 
-        qui encapsule toutes les requêtes API. Les composants ne font jamais d'appels 
+        qui encapsule toutes les requêtes Axios. Les composants ne font jamais d'appels 
         API directement.
       </Callout>
 
@@ -401,9 +421,18 @@ const PostPages = () => {
       <CodeBlock code={listPageCode} language="typescript" />
 
       <h2 id="detail">Détail d'un article</h2>
+      <p>
+        Le contenu est rendu en HTML riche grâce à <code>dangerouslySetInnerHTML</code> car 
+        il est généré par Tiptap côté création.
+      </p>
       <CodeBlock code={detailPageCode} language="typescript" />
 
-      <h2 id="create">Création d'article</h2>
+      <h2 id="create">Création d'article (Tiptap)</h2>
+      <Callout type="info" title="Éditeur riche">
+        Le formulaire utilise <strong>Tiptap</strong> au lieu d'un simple <code>&lt;Textarea&gt;</code>. 
+        Le composant <code>TiptapEditor</code> est intégré via <code>Controller</code> de React Hook Form 
+        pour une validation Zod transparente.
+      </Callout>
       <CodeBlock code={createPageCode} language="typescript" />
 
       <DocsPagination
