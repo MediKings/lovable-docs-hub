@@ -89,7 +89,7 @@ const sidebarItems: SidebarItem[] = [
     title: "Projet : Next.js Full-Stack (Prisma)",
     items: [
       { title: "Prisma & PostgreSQL", href: "/docs/nextjs-fullstack/prisma" },
-      { title: "NextAuth.js", href: "/docs/nextjs-fullstack/auth" },
+      { title: "BetterAuth", href: "/docs/nextjs-fullstack/auth" },
       { title: "API Routes", href: "/docs/nextjs-fullstack/api" },
       { title: "Pages du Blog", href: "/docs/nextjs-fullstack/pages" },
     ],
