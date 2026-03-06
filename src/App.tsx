@@ -38,7 +38,7 @@ import NextjsFrontendPosts from "./pages/docs/nextjs-frontend/PostPages";
 import NextjsFrontendComments from "./pages/docs/nextjs-frontend/CommentsLikes";
 // Next.js Full-Stack (Prisma)
 import PrismaSetup from "./pages/docs/nextjs-fullstack/PrismaSetup";
-import NextAuthSetup from "./pages/docs/nextjs-fullstack/NextAuthSetup";
+import BetterAuthSetup from "./pages/docs/nextjs-fullstack/BetterAuthSetup";
 import ApiRoutes from "./pages/docs/nextjs-fullstack/ApiRoutes";
 import BlogPages from "./pages/docs/nextjs-fullstack/BlogPages";
 import NotFound from "./pages/NotFound";
