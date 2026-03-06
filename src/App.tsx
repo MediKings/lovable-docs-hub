@@ -38,7 +38,7 @@ import NextjsFrontendPosts from "./pages/docs/nextjs-frontend/PostPages";
 import NextjsFrontendComments from "./pages/docs/nextjs-frontend/CommentsLikes";
 // Next.js Full-Stack (Prisma)
 import PrismaSetup from "./pages/docs/nextjs-fullstack/PrismaSetup";
-import NextAuthSetup from "./pages/docs/nextjs-fullstack/NextAuthSetup";
+import BetterAuthSetup from "./pages/docs/nextjs-fullstack/BetterAuthSetup";
 import ApiRoutes from "./pages/docs/nextjs-fullstack/ApiRoutes";
 import BlogPages from "./pages/docs/nextjs-fullstack/BlogPages";
 import NotFound from "./pages/NotFound";
@@ -93,7 +93,7 @@ const App = () => (
           <Route path="/docs/nextjs-frontend/comments" element={<NextjsFrontendComments />} />
           {/* Projet : Next.js Full-Stack (Prisma) */}
           <Route path="/docs/nextjs-fullstack/prisma" element={<PrismaSetup />} />
-          <Route path="/docs/nextjs-fullstack/auth" element={<NextAuthSetup />} />
+          <Route path="/docs/nextjs-fullstack/auth" element={<BetterAuthSetup />} />
           <Route path="/docs/nextjs-fullstack/api" element={<ApiRoutes />} />
           <Route path="/docs/nextjs-fullstack/pages" element={<BlogPages />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

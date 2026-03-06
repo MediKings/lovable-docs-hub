@@ -22,14 +22,13 @@ blog-fullstack/
 │   │   ├── layout.tsx
 │   │   ├── page.tsx
 │   │   ├── (auth)/
-│   │   │   ├── login/page.tsx
-│   │   │   └── register/page.tsx
+│   │   │   └── login/page.tsx     # Bouton "Se connecter avec GhennySoft"
 │   │   ├── posts/
 │   │   │   ├── page.tsx           # Server Component (liste)
 │   │   │   ├── [slug]/page.tsx    # Server Component (détail)
 │   │   │   └── create/page.tsx    # Client Component (Tiptap)
 │   │   └── api/
-│   │       ├── auth/[...nextauth]/route.ts
+│   │       ├── auth/[...all]/route.ts  # BetterAuth handler
 │   │       ├── posts/route.ts
 │   │       ├── posts/[slug]/route.ts
 │   │       ├── comments/route.ts
@@ -44,7 +43,8 @@ blog-fullstack/
 │   ├── lib/
 │   │   ├── prisma.ts              # Instance Prisma singleton
 │   │   ├── api-client.ts          # Axios pour les Client Components
-│   │   ├── auth.ts                # Config Auth.js
+│   │   ├── auth.ts                # Config BetterAuth + IDP OIDC
+│   │   ├── auth-client.ts         # Client BetterAuth (React)
 │   │   └── validations.ts         # Schémas Zod
 │   └── types/
 │       └── index.ts
@@ -54,7 +54,7 @@ blog-fullstack/
 └── package.json`;
 
 const installCode = `# Installation des dépendances
-npm install prisma@7 @prisma/client@7 next-auth@5 @auth/prisma-adapter
+npm install prisma@7 @prisma/client@7 better-auth
 npm install axios @tanstack/react-query@5 zod react-hook-form @hookform/resolvers
 npm install @tiptap/react @tiptap/starter-kit @tiptap/extension-placeholder
 npm install -D prisma@7
@@ -62,12 +62,19 @@ npm install -D prisma@7
 # Initialiser Prisma avec PostgreSQL
 npx prisma init --datasource-provider postgresql
 
+# Générer les tables BetterAuth
+npx @better-auth/cli generate --config src/lib/auth.ts
+npx prisma migrate dev --name init
+
 # Variables d'environnement (.env)
 DATABASE_URL="postgresql://user:password@localhost:5432/blog_gs?schema=public"
-AUTH_SECRET="votre-secret-genere-avec-openssl-rand-base64-32"
-AUTH_URL="http://localhost:3000"`;
+BETTER_AUTH_SECRET="votre-secret-genere-avec-openssl-rand-base64-32"
+BETTER_AUTH_URL="http://localhost:3000"
+GHENNYSOFT_CLIENT_ID="votre-client-id"
+GHENNYSOFT_CLIENT_SECRET="votre-client-secret"
+GHENNYSOFT_ISSUER="https://accounts.ghennysoft.com"`;
 
-const schemaCode = `// prisma/schema.prisma — Prisma 7
+const schemaCode = `// prisma/schema.prisma — Prisma 7 + BetterAuth
 generator client {
   provider = "prisma-client-js"
 }
@@ -77,36 +84,78 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ──────────────────────────────────────
+// Tables gérées par BetterAuth (auto-générées)
+// ──────────────────────────────────────
+
 model User {
-  id            String    @id @default(cuid())
-  username      String    @unique
+  id            String    @id
+  name          String
   email         String    @unique
-  passwordHash  String    @map("password_hash")
-  firstName     String?   @map("first_name")
-  lastName      String?   @map("last_name")
-  avatar        String?
+  emailVerified Boolean   @default(false) @map("email_verified")
+  image         String?
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
 
-  // Relations
+  // Relations BetterAuth
+  sessions      Session[]
+  accounts      Account[]
+
+  // Relations métier
   posts         Post[]
   comments      Comment[]
   likes         Like[]
-  sessions      Session[]
 
   @@map("users")
 }
 
 model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique @map("session_token")
-  userId       String   @map("user_id")
-  expires      DateTime
+  id        String   @id
+  expiresAt DateTime @map("expires_at")
+  token     String   @unique
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+  userId    String   @map("user_id")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("sessions")
 }
+
+model Account {
+  id                    String    @id
+  accountId             String    @map("account_id")
+  providerId            String    @map("provider_id")
+  userId                String    @map("user_id")
+  accessToken           String?   @map("access_token")
+  refreshToken          String?   @map("refresh_token")
+  idToken               String?   @map("id_token")
+  accessTokenExpiresAt  DateTime? @map("access_token_expires_at")
+  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at")
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("accounts")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime @map("expires_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("verifications")
+}
+
+// ──────────────────────────────────────
+// Tables métier (Blog)
+// ──────────────────────────────────────
 
 model Post {
   id          String    @id @default(cuid())
@@ -185,8 +234,9 @@ if (process.env.NODE_ENV !== "production") {
 // npx prisma db seed                    # Exécuter le seed`;
 
 const seedCode = `// prisma/seed.ts
+// Note : pas de seed utilisateur car les comptes sont créés
+// automatiquement par BetterAuth lors de la première connexion OIDC
 import { PrismaClient } from "@prisma/client";
-import { hash } from "bcryptjs";
 
 const prisma = new PrismaClient();
 
@@ -198,18 +248,13 @@ const slugify = (text: string): string => {
 };
 
 const main = async () => {
-  // Créer un utilisateur de test
-  const admin = await prisma.user.upsert({
-    where: { email: "admin@ghennysoft.com" },
-    update: {},
-    create: {
-      username: "admin",
-      email: "admin@ghennysoft.com",
-      passwordHash: await hash("Admin123!", 12),
-      firstName: "Admin",
-      lastName: "GhennySoft",
-    },
-  });
+  // Vérifier qu'un utilisateur existe (créé via OIDC)
+  const user = await prisma.user.findFirst();
+
+  if (!user) {
+    console.log("⚠️  Aucun utilisateur trouvé. Connectez-vous d'abord via accounts.ghennysoft.com");
+    return;
+  }
 
   // Créer des articles de test (contenu HTML riche)
   const posts = [
@@ -222,8 +267,8 @@ const main = async () => {
       content: "<h2>Introduction</h2><p>Prisma 7 est un ORM moderne pour TypeScript...</p>",
     },
     {
-      title: "Authentification avec Auth.js v5",
-      content: "<h2>Présentation</h2><p>Auth.js v5 simplifie l'authentification...</p>",
+      title: "Authentification avec BetterAuth",
+      content: "<h2>Présentation</h2><p>BetterAuth simplifie l'authentification via OIDC...</p>",
     },
   ];
 
@@ -234,7 +279,7 @@ const main = async () => {
       create: {
         ...post,
         slug: slugify(post.title),
-        authorId: admin.id,
+        authorId: user.id,
         isPublished: true,
       },
     });
@@ -257,11 +302,11 @@ const PrismaSetup = () => {
 
       <p>
         Ce projet implémente un <strong>blog complet</strong> avec Next.js 16, Prisma 7 ORM 
-        et PostgreSQL. Pas de backend séparé — tout est dans un seul projet Next.js.
+        et PostgreSQL. L'authentification est déléguée à l'IDP GhennySoft via <strong>BetterAuth</strong>.
       </p>
 
       <Callout type="info" title="Stack technique">
-        Next.js 16 · Prisma 7 · PostgreSQL · Auth.js v5 · TypeScript · Axios · TanStack Query v5 · Zod · React Hook Form · Tiptap · Tailwind CSS v4
+        Next.js 16 · Prisma 7 · PostgreSQL · BetterAuth · IDP GhennySoft (OIDC) · TypeScript · Axios · TanStack Query v5 · Zod · React Hook Form · Tiptap · Tailwind CSS v4
       </Callout>
 
       <hr />
@@ -274,9 +319,9 @@ const PrismaSetup = () => {
 
       <h2 id="schema">Schéma Prisma</h2>
       <p>
-        Le schéma définit tous les modèles avec les conventions GhennySoft : 
-        <code>snake_case</code> pour les colonnes SQL, <code>camelCase</code> pour TypeScript.
-        Le champ <code>content</code> stocke du HTML riche généré par Tiptap.
+        Le schéma inclut les tables <strong>BetterAuth</strong> (<code>User</code>, <code>Session</code>, <code>Account</code>, <code>Verification</code>) 
+        et les tables métier (<code>Post</code>, <code>Comment</code>, <code>Like</code>). 
+        Les utilisateurs sont créés automatiquement lors de la première connexion via l'IDP.
       </p>
       <CodeBlock code={schemaCode} language="typescript" />
 
@@ -294,11 +339,15 @@ const PrismaSetup = () => {
       </Callout>
 
       <h2 id="seed">Seed de la base</h2>
+      <p>
+        Pas de seed utilisateur car les comptes sont créés automatiquement par BetterAuth 
+        lors de la première connexion OIDC sur <code>accounts.ghennysoft.com</code>.
+      </p>
       <CodeBlock code={seedCode} language="typescript" />
 
       <DocsPagination
         prev={{ title: "Commentaires & Likes (Frontend)", href: "/docs/nextjs-frontend/comments" }}
-        next={{ title: "Auth.js v5", href: "/docs/nextjs-fullstack/auth" }}
+        next={{ title: "BetterAuth", href: "/docs/nextjs-fullstack/auth" }}
       />
     </DocsLayout>
   );

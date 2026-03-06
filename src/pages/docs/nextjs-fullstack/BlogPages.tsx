@@ -35,7 +35,7 @@ const PostsPage = async ({ searchParams }: Props) => {
       where: { isPublished: true },
       include: {
         author: {
-          select: { username: true, firstName: true, lastName: true },
+          select: { name: true, image: true },
         },
         _count: { select: { comments: true, likes: true } },
       },
@@ -63,7 +63,7 @@ const PostsPage = async ({ searchParams }: Props) => {
             key={post.id}
             post={{
               ...post,
-              authorName: \`\${post.author.firstName} \${post.author.lastName}\`.trim(),
+              authorName: post.author.name ?? "Anonyme",
               commentCount: post._count.comments,
               likeCount: post._count.likes,
             }}
@@ -82,8 +82,9 @@ export default PostsPage;`;
 
 const detailPageCode = `// src/app/posts/[slug]/page.tsx — Server Component
 import { notFound } from "next/navigation";
+import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
-import { getCurrentUser } from "@/lib/auth";
+import { getSession } from "@/lib/auth";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { CommentSection } from "@/components/comments/comment-section";
@@ -120,7 +121,7 @@ export const generateMetadata = async ({ params }: Props) => {
 
 const PostDetailPage = async ({ params }: Props) => {
   const { slug } = await params;
-  const user = await getCurrentUser();
+  const session = await getSession(await headers());
 
   // Récupérer le post ET incrémenter les vues en une requête
   const post = await prisma.post.update({
@@ -130,9 +131,8 @@ const PostDetailPage = async ({ params }: Props) => {
       author: {
         select: {
           id: true,
-          username: true,
-          firstName: true,
-          lastName: true,
+          name: true,
+          image: true,
         },
       },
       _count: { select: { comments: true, likes: true } },
@@ -141,16 +141,14 @@ const PostDetailPage = async ({ params }: Props) => {
 
   if (!post) notFound();
 
-  const isAuthor = user?.id === post.authorId;
+  const isAuthor = session?.user?.id === post.authorId;
 
   return (
     <article className="max-w-3xl mx-auto py-8">
       <header className="mb-8">
         <h1 className="text-3xl font-bold mb-3">{post.title}</h1>
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
-          <span>
-            Par {post.author.firstName} {post.author.lastName}
-          </span>
+          <span>Par {post.author.name}</span>
           <span>
             {formatDistanceToNow(post.createdAt, {
               addSuffix: true,
@@ -176,7 +174,7 @@ const PostDetailPage = async ({ params }: Props) => {
       <CommentSection
         postSlug={post.slug}
         commentCount={post._count.comments}
-        isAuthenticated={!!user}
+        isAuthenticated={!!session}
       />
     </article>
   );
@@ -423,7 +421,8 @@ const BlogPages = () => {
         Les pages du blog combinant <strong>Server Components</strong> pour le rendu 
         initial et les performances SEO, et <strong>Client Components</strong> avec 
         <strong> Axios</strong>, <strong>TanStack Query v5</strong>, <strong>Zod</strong>, 
-        <strong> React Hook Form</strong> et <strong>Tiptap</strong> pour l'interactivité.
+        <strong> React Hook Form</strong> et <strong>Tiptap</strong> pour l'interactivité. 
+        L'authentification est gérée par <strong>BetterAuth</strong> via l'IDP GhennySoft.
       </p>
 
       <Callout type="tip" title="Pattern GhennySoft">
@@ -440,7 +439,8 @@ const BlogPages = () => {
       <h2 id="detail">Détail article (Server Component)</h2>
       <p>
         Le détail incrémente les vues et génère les métadonnées SEO dynamiquement. 
-        Le contenu HTML riche (Tiptap) est rendu via <code>dangerouslySetInnerHTML</code>.
+        Le contenu HTML riche (Tiptap) est rendu via <code>dangerouslySetInnerHTML</code>. 
+        La session BetterAuth est récupérée via <code>getSession()</code> côté serveur.
       </p>
       <CodeBlock code={detailPageCode} language="typescript" />
 

@@ -34,26 +34,6 @@ export const createCommentSchema = z.object({
     .max(1000, "Maximum 1000 caractères"),
 });
 
-export const registerSchema = z
-  .object({
-    username: z
-      .string()
-      .min(3, "Minimum 3 caractères")
-      .max(30, "Maximum 30 caractères")
-      .regex(/^[a-zA-Z0-9_]+$/, "Lettres, chiffres et _ uniquement"),
-    email: z.string().email("Email invalide"),
-    password: z
-      .string()
-      .min(8, "Minimum 8 caractères")
-      .regex(/[A-Z]/, "Au moins une majuscule")
-      .regex(/[0-9]/, "Au moins un chiffre"),
-    passwordConfirm: z.string(),
-  })
-  .refine((d) => d.password === d.passwordConfirm, {
-    message: "Les mots de passe ne correspondent pas",
-    path: ["passwordConfirm"],
-  });
-
 export type CreatePostInput = z.infer<typeof createPostSchema>;
 export type UpdatePostInput = z.infer<typeof updatePostSchema>;
 export type CreateCommentInput = z.infer<typeof createCommentSchema>;`;
@@ -62,6 +42,7 @@ const postsRouteCode = `// src/app/api/posts/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 import { createPostSchema } from "@/lib/validations";
 
 const slugify = (text: string): string => {
@@ -83,7 +64,7 @@ export const GET = async (req: NextRequest) => {
       where: { isPublished: true },
       include: {
         author: {
-          select: { id: true, username: true, firstName: true, lastName: true },
+          select: { id: true, name: true, image: true },
         },
         _count: { select: { comments: true, likes: true } },
       },
@@ -97,7 +78,7 @@ export const GET = async (req: NextRequest) => {
   return NextResponse.json({
     data: posts.map((p) => ({
       ...p,
-      authorName: \`\${p.author.firstName} \${p.author.lastName}\`.trim(),
+      authorName: p.author.name,
       commentCount: p._count.comments,
       likeCount: p._count.likes,
     })),
@@ -112,8 +93,11 @@ export const GET = async (req: NextRequest) => {
 
 // POST /api/posts — Créer un article (contenu HTML via Tiptap)
 export const POST = async (req: NextRequest) => {
-  const session = await auth();
-  if (!session?.user?.id) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
     return NextResponse.json(
       { error: { code: "UNAUTHORIZED", message: "Non authentifié" } },
       { status: 401 }
@@ -153,6 +137,7 @@ const postDetailCode = `// src/app/api/posts/[slug]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 import { updatePostSchema } from "@/lib/validations";
 
 interface Params {
@@ -168,7 +153,7 @@ export const GET = async (req: NextRequest, { params }: Params) => {
     data: { viewCount: { increment: 1 } },
     include: {
       author: {
-        select: { id: true, username: true, firstName: true, lastName: true },
+        select: { id: true, name: true, image: true },
       },
       _count: { select: { comments: true, likes: true } },
     },
@@ -187,8 +172,11 @@ export const GET = async (req: NextRequest, { params }: Params) => {
 // PATCH /api/posts/:slug — Modifier un article
 export const PATCH = async (req: NextRequest, { params }: Params) => {
   const { slug } = await params;
-  const session = await auth();
-  if (!session?.user?.id) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
     return NextResponse.json(
       { error: { code: "UNAUTHORIZED", message: "Non authentifié" } },
       { status: 401 }
@@ -232,8 +220,11 @@ export const PATCH = async (req: NextRequest, { params }: Params) => {
 // DELETE /api/posts/:slug — Supprimer un article
 export const DELETE = async (req: NextRequest, { params }: Params) => {
   const { slug } = await params;
-  const session = await auth();
-  if (!session?.user?.id) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
     return NextResponse.json(
       { error: { code: "UNAUTHORIZED", message: "Non authentifié" } },
       { status: 401 }
@@ -257,6 +248,7 @@ const commentsRouteCode = `// src/app/api/posts/[slug]/comments/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 import { createCommentSchema } from "@/lib/validations";
 
 interface Params {
@@ -283,7 +275,7 @@ export const GET = async (req: NextRequest, { params }: Params) => {
     where: { postId: post.id },
     include: {
       author: {
-        select: { id: true, username: true, firstName: true, lastName: true },
+        select: { id: true, name: true, image: true },
       },
     },
     orderBy: { createdAt: "desc" },
@@ -295,8 +287,11 @@ export const GET = async (req: NextRequest, { params }: Params) => {
 // POST /api/posts/:slug/comments
 export const POST = async (req: NextRequest, { params }: Params) => {
   const { slug } = await params;
-  const session = await auth();
-  if (!session?.user?.id) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
     return NextResponse.json(
       { error: { code: "UNAUTHORIZED", message: "Non authentifié" } },
       { status: 401 }
@@ -333,7 +328,7 @@ export const POST = async (req: NextRequest, { params }: Params) => {
     },
     include: {
       author: {
-        select: { id: true, username: true, firstName: true, lastName: true },
+        select: { id: true, name: true, image: true },
       },
     },
   });
@@ -345,6 +340,7 @@ const likesRouteCode = `// src/app/api/posts/[slug]/likes/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 interface Params {
   params: Promise<{ slug: string }>;
@@ -353,8 +349,11 @@ interface Params {
 // POST /api/posts/:slug/likes — Toggle like
 export const POST = async (req: NextRequest, { params }: Params) => {
   const { slug } = await params;
-  const session = await auth();
-  if (!session?.user?.id) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
     return NextResponse.json(
       { error: { code: "UNAUTHORIZED", message: "Non authentifié" } },
       { status: 401 }
@@ -404,7 +403,9 @@ export const POST = async (req: NextRequest, { params }: Params) => {
 // GET /api/posts/:slug/likes — Statut du like
 export const GET = async (req: NextRequest, { params }: Params) => {
   const { slug } = await params;
-  const session = await auth();
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
   const userId = session?.user?.id ?? null;
 
   const post = await prisma.post.findUnique({
@@ -510,7 +511,7 @@ const ApiRoutes = () => {
 
       <p>
         Toutes les API Routes du blog implémentées avec les Route Handlers de Next.js 16, 
-        la validation <strong>Zod</strong>, <strong>Auth.js v5</strong> pour l'authentification 
+        la validation <strong>Zod</strong>, <strong>BetterAuth</strong> pour l'authentification 
         et <strong>Prisma 7</strong> pour l'accès aux données.
       </p>
 
@@ -518,6 +519,12 @@ const ApiRoutes = () => {
         Toutes les API suivent le format GhennySoft : <code>{"{ data, meta }"}</code> pour 
         les succès et <code>{"{ error: { code, message, details } }"}</code> pour les erreurs.
         Le champ <code>content</code> contient du HTML riche généré par Tiptap.
+      </Callout>
+
+      <Callout type="tip" title="Authentification BetterAuth">
+        Dans chaque route protégée, la session est récupérée via{" "}
+        <code>auth.api.getSession({"{ headers: await headers() }"})</code>. 
+        L'utilisateur est identifié par <code>session.user.id</code>, provenant de l'IDP GhennySoft.
       </Callout>
 
       <hr />
@@ -544,7 +551,7 @@ const ApiRoutes = () => {
       <CodeBlock code={errorHandlerCode} language="typescript" />
 
       <DocsPagination
-        prev={{ title: "Auth.js v5", href: "/docs/nextjs-fullstack/auth" }}
+        prev={{ title: "BetterAuth", href: "/docs/nextjs-fullstack/auth" }}
         next={{ title: "Pages du blog", href: "/docs/nextjs-fullstack/pages" }}
       />
     </DocsLayout>
