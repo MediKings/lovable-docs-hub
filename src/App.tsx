@@ -11,6 +11,8 @@ import ReactStandards from "./pages/docs/frontend/ReactStandards";
 import NextjsStandards from "./pages/docs/frontend/NextjsStandards";
 import DjangoStandards from "./pages/docs/backend/DjangoStandards";
 import ApiStandards from "./pages/docs/backend/ApiStandards";
+import RedisSetup from "./pages/docs/backend/RedisSetup";
+import CelerySetup from "./pages/docs/backend/CelerySetup";
 import CommitNaming from "./pages/docs/git/CommitNaming";
 import GitWorkflow from "./pages/docs/git/GitWorkflow";
 import Libraries from "./pages/docs/Libraries";
