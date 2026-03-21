@@ -144,6 +144,8 @@ const Index = () => {
                 <ProjectLink href="/docs/models/post" label="Modèles (Post, Comment, Like)" />
                 <ProjectLink href="/docs/serializers/post" label="Serializers DRF" />
                 <ProjectLink href="/docs/views/posts" label="Views & CRUD" />
+                <ProjectLink href="/docs/backend/redis" label="Redis — Cache & Sessions" />
+                <ProjectLink href="/docs/backend/celery" label="Celery — Tâches async" />
               </div>
             </Link>
             {/* Projet 2 */}

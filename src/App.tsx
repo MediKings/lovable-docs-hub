@@ -11,6 +11,8 @@ import ReactStandards from "./pages/docs/frontend/ReactStandards";
 import NextjsStandards from "./pages/docs/frontend/NextjsStandards";
 import DjangoStandards from "./pages/docs/backend/DjangoStandards";
 import ApiStandards from "./pages/docs/backend/ApiStandards";
+import RedisSetup from "./pages/docs/backend/RedisSetup";
+import CelerySetup from "./pages/docs/backend/CelerySetup";
 import CommitNaming from "./pages/docs/git/CommitNaming";
 import GitWorkflow from "./pages/docs/git/GitWorkflow";
 import Libraries from "./pages/docs/Libraries";
@@ -63,6 +65,8 @@ const App = () => (
           {/* Backend */}
           <Route path="/docs/backend/django" element={<DjangoStandards />} />
           <Route path="/docs/backend/api" element={<ApiStandards />} />
+          <Route path="/docs/backend/redis" element={<RedisSetup />} />
+          <Route path="/docs/backend/celery" element={<CelerySetup />} />
           {/* Git */}
           <Route path="/docs/git/commits" element={<CommitNaming />} />
           <Route path="/docs/git/workflow" element={<GitWorkflow />} />
