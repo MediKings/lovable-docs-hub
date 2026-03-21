@@ -65,6 +65,8 @@ const App = () => (
           {/* Backend */}
           <Route path="/docs/backend/django" element={<DjangoStandards />} />
           <Route path="/docs/backend/api" element={<ApiStandards />} />
+          <Route path="/docs/backend/redis" element={<RedisSetup />} />
+          <Route path="/docs/backend/celery" element={<CelerySetup />} />
           {/* Git */}
           <Route path="/docs/git/commits" element={<CommitNaming />} />
           <Route path="/docs/git/workflow" element={<GitWorkflow />} />

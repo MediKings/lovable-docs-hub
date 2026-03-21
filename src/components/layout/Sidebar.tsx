@@ -35,6 +35,8 @@ const sidebarItems: SidebarItem[] = [
     items: [
       { title: "Django REST Framework", href: "/docs/backend/django" },
       { title: "Standards API REST", href: "/docs/backend/api" },
+      { title: "Redis — Cache & Sessions", href: "/docs/backend/redis" },
+      { title: "Celery — Tâches async", href: "/docs/backend/celery" },
     ],
   },
   {
